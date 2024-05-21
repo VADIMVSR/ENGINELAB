@@ -1,20 +1,51 @@
-class DefaultList(list):
-    def __init__(self, default_value):
-        self.default_value = default_value
-        super().__init__()
+import sys
 
-    def __getitem__(self, index):
-        try:
-            return super().__getitem__(index)
-        except IndexError:
-            return self.default_value
+def read_file(filename):
+    try:
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+            return lines
+    except FileNotFoundError:
+        return None
 
-# Пример использования
-my_list = DefaultList(default_value="N/A")
-my_list.append(1)
-my_list.append(2)
-my_list.append(3)
+def print_file_content(lines, add_num=False, add_count=False, sort_lines=False):
+    if lines is None:
+        print("ERROR")
+        return
 
-print(my_list[0])  # Выведет: 1
-print(my_list[2])  # Выведет: 3
-print(my_list[5])  # Выведет: N/A, так как индекс 5 выходит за границы списка
+    if sort_lines:
+        lines.sort()
+
+    if add_num:
+        for i, line in enumerate(lines):
+            print(f"{i} {line.strip()}")
+    else:
+        for line in lines:
+            print(line.strip())
+
+    if add_count:
+        print(f"rows count: {len(lines)}")
+
+def main():
+    # Проверяем, что количество аргументов не менее 2 (имя скрипта и имя файла)
+    if len(sys.argv) < 2:
+        print("ERROR")
+        return
+
+    # Извлекаем имя файла из аргументов командной строки
+    filename = sys.argv[-1]
+
+    # Проверяем существование файла
+    lines = read_file(filename)
+
+    # Обработка дополнительных аргументов
+    add_num = '--num' in sys.argv
+    add_count = '--count' in sys.argv
+    sort_lines = '--sort' in sys.argv
+
+    # Вывод содержимого файла
+    print_file_content(lines, add_num, add_count, sort_lines)
+
+if __name__ == "__main__":
+    main()
+

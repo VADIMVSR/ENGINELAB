@@ -1,25 +1,19 @@
-def check_password(password):
-    # Проверка длины пароля
-    if len(password) <= 8:
-        return "error"
+import sys
 
-    # Проверка наличия больших и маленьких букв
-    if not any(char.isupper() for char in password) or not any(char.islower() for char in password):
-        return "error"
+def main():
+    # Проверяем, что количество аргументов равно 3
+    if len(sys.argv) != 3:
+        print(0)
+        return
 
-    # Проверка наличия хотя бы одной цифры
-    if not any(char.isdigit() for char in password):
-        return "error"
+    try:
+        num1 = int(sys.argv[1])
+        num2 = int(sys.argv[2])
+        # Выводим сумму аргументов
+        print(num1 + num2)
+    except ValueError:
+        # Если возникает ошибка преобразования типов
+        print(0)
 
-    # Проверка на комбинации из 3 буквенных символов
-    keyboard_layouts = ['qwertyuiop', 'йцукенгшщзхъ', 'asdfghjkl', 'фывапролджэ', 'zxcvbnm', 'ячсмитьбю']
-    for layout in keyboard_layouts:
-        if layout in password.lower():
-            return "error"
-
-    return "ok"
-
-# Пример использования
-password = input("Введите пароль: ")
-result = check_password(password)
-print(result)
+if __name__ == "__main__":
+    main()

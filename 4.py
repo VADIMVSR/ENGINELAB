@@ -1,29 +1,32 @@
 import sys
 
+def parse_arguments(arguments):
+    parsed_args = []
 
-def check_password(password):
-    try:
-        assert len(password) > 8, "Длина пароля должна быть не менее 9 символов"
-        assert any(char.isupper() for char in password) and any(
-            char.islower() for char in password), "Пароль должен содержать символы верхнего и нижнего регистра"
-        assert any(char.isdigit() for char in password), "Пароль должен содержать хотя бы одну цифру"
+    # Проходимся по аргументам, начиная с индекса 1, так как нулевой аргумент - название скрипта
+    for arg in arguments[1:]:
+        # Проверяем наличие символа "=" в аргументе
+        if '=' in arg:
+            key, value = arg.split('=')
+            parsed_args.append((key, value))
+        elif arg != '--sort':  # Исключаем опцию --sort из вывода ошибки
+            print(f"Invalid argument format: {arg}")
 
-        keyboard_layouts = ['qwertyuiop', 'йцукенгшщзхъ', 'asdfghjkl', 'фывапролджэ', 'zxcvbnm', 'ячсмитьбю']
-        for layout in keyboard_layouts:
-            assert layout not in password.lower(), "Пароль не должен содержать последовательность из подряд идущих трех символов"
+    return parsed_args
 
-        return True
-    except AssertionError as e:
-        print(f"Имя класса исключения: {e.__class__.__name__}")
-        return False
+def print_arguments(parsed_args):
+    # Если передана опция --sort, сортируем аргументы по ключу
+    if '--sort' in sys.argv:
+        parsed_args.sort(key=lambda x: x[0])
 
+    # Выводим отформатированные аргументы
+    for key, value in parsed_args:
+        print(f"Key: {key} Value: {value}")
 
-while True:
-    password = input("Введите пароль: ")
-    if password.lower() == "ctrl+break":
-        print("Bye-Вуе")
-        sys.exit()
+def main():
+    arguments = sys.argv
+    parsed_args = parse_arguments(arguments)
+    print_arguments(parsed_args)
 
-    if check_password(password):
-        print("ok")
-        break
+if __name__ == "__main__":
+    main()

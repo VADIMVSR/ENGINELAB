@@ -1,20 +1,27 @@
-def check_password(password):
+import sys
+
+def main():
     try:
-        assert len(password) > 8, "Длина пароля должна быть не менее 9 символов"
-        assert any(char.isupper() for char in password) and any(char.islower() for char in password), "Пароль должен содержать символы верхнего и нижнего регистра"
-        assert any(char.isdigit() for char in password), "Пароль должен содержать хотя бы одну цифру"
+        num1 = float(sys.argv[1])
+        num2 = float(sys.argv[2])
+        operator = sys.argv[3]
 
-        keyboard_layouts = ['qwertyuiop', 'йцукенгшщзхъ', 'asdfghjkl', 'фывапролджэ', 'zxcvbnm', 'ячсмитьбю']
-        for layout in keyboard_layouts:
-            assert layout not in password.lower(), "Пароль не должен содержать последовательность из подряд идущих трех символов"
+        operators = {'+': lambda x, y: x + y,
+                     '-': lambda x, y: x - y,
+                     '*': lambda x, y: x * y,
+                     '/': lambda x, y: x / y if y != 0 else print("Division by zero"),
+                     '^': lambda x, y: x ** y}
 
-        return "ok"
-    except AssertionError as e:
-        return f"error: {e}"
-    except Exception as e:
-        return f"error: Неизвестная ошибка - {e}"
+        result = operators.get(operator, lambda x, y: print("Оператор не поддерживается"))(num1, num2)
+        if result is not None:
+            print(result)
+    except (ValueError, IndexError):
+        print("ValueError")
+    except ZeroDivisionError:
+        print("ZeroDivisionError")
 
-# Пример использования
-password = input("Введите пароль: ")
-result = check_password(password)
-print(result)
+if __name__ == "__main__":
+    if len(sys.argv) != 4:
+        print("Много аргументов")
+    else:
+        main()
