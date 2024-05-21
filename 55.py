@@ -1,57 +1,33 @@
-class MailServer:
-    def __init__(self, name):
-        self.name = name
-        self.users = {}
-
-    def add_user(self, user):
-        self.users[user] = []
-
-    def send_mail(self, recipient_server, recipient_user, message):
-        if recipient_server in servers_list:
-            recipient_server_obj = servers_list[recipient_server]
-            if recipient_user in recipient_server_obj.users:
-                recipient_server_obj.users[recipient_user].append(message)
-                print(f"Message sent to {recipient_user} on {recipient_server}")
+ 
+def check_phone_number(phone):
+    try:
+        phone = ''.join(filter(str.isdigit, phone))  # Убираем все символы-НЕцифры
+        if phone.startswith('7'):
+            if len(phone) == 11:  # Проверяем длину и начало номера
+                operator_code = phone[1:4]
+                if operator_code in ['910', '911', '912', '913', '914', '915', '916', '917', '918', '919',
+                                     '980', '981', '982', '983', '984', '985', '986', '987', '988', '989']:
+                    return '+7' + phone[1:], "МТС"
+                elif operator_code in ['920', '921', '922', '923', '924', '925', '926', '927', '928', '929',
+                                       '930', '931', '932', '933', '934', '935', '936', '937', '938', '939']:
+                    return '+7' + phone[1:], "МегаФон"
+                elif operator_code in ['902', '903', '904', '905',
+                                       '960', '961', '962','963','964','965','966','967','968','969']:
+                    return '+7' + phone[1:], "Билайн"
+                else:
+                    return '+7' + phone[1:], "не определяется оператор сотовой связи"
             else:
-                print(f"User {recipient_user} not found on {recipient_server}")
+                raise ValueError("Неверное количество цифр")
+        elif phone.startswith(('8', '+359', '+55', '+1')):
+            if len(phone) == 10 or len(phone) == 12:  # Проверяем длину и начало номера
+                return phone, "не определяется оператор сотовой связи"
+            else:
+                raise ValueError("Неверное количество цифр")
         else:
-            print(f"Server {recipient_server} not found")
+            raise ValueError("Не определяется код страны")
+    except ValueError as e:
+        return phone, str(e)
 
-    def get_mail(self, user):
-        if user in self.users:
-            messages = self.users[user]
-            del self.users[user]
-            return messages
-        else:
-            return []
-
-class MailClient:
-    def __init__(self, server, user):
-        self.server = server
-        self.user = user
-
-    def receive_mail(self):
-        messages = servers_list[self.server].get_mail(self.user)
-        return messages
-
-    def send_mail(self, recipient_server, recipient_user, message):
-        servers_list[self.server].send_mail(recipient_server, recipient_user, message)
-
-# Создание списка серверов
-servers_list = {}
-
-# Пример использования
-server1 = MailServer("Server1")
-server2 = MailServer("Server2")
-servers_list["Server1"] = server1
-servers_list["Server2"] = server2
-
-server1.add_user("User1")
-server2.add_user("User2")
-
-client1 = MailClient("Server1", "User1")
-client2 = MailClient("Server2", "User2")
-
-client1.send_mail("Server2", "User2", "Hello from User1")
-received_messages = client2.receive_mail()
-print(received_messages)
+phone_number = input("Введите номер телефона: ")
+formatted_phone_number, message = check_phone_number(phone_number)
+print(formatted_phone_number, "-", message)

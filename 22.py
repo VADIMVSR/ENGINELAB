@@ -1,54 +1,15 @@
-class LeftParagraph:
-    def __init__(self, width):
-        self.width = width
-        self.words = []
-
-    def add_word(self, word):
-        if len(' '.join(self.words)) + len(word) <= self.width:
-            self.words.append(word)
+def check_phone_number(phone):
+    try:
+        phone = ''.join(filter(str.isdigit, phone))  # Убираем все символы-НЕцифры
+        if len(phone) == 11 and phone.startswith('7'):  # Проверяем длину и начало номера
+            return '+' + phone
+        elif len(phone) == 10 and phone.startswith('8'):  # Проверяем длину и начало номера
+            return '+7' + phone[1:]
         else:
-            self.end()
-            self.words.append(word)
+            raise ValueError("Некорректный формат номера")
+    except (ValueError, IndexError):
+        return 'error'
 
-    def end(self):
-        print(' '.join(self.words))
-        self.words = []
-
-
-class RightParagraph:
-    def __init__(self, width):
-        self.width = width
-        self.words = []
-
-    def add_word(self, word):
-        if len(' '.join(self.words)) + len(word) <= self.width:
-            self.words.append(word)
-        else:
-            self.end()
-            self.words.append(word)
-
-    def end(self):
-        padding = ' ' * (self.width - len(' '.join(self.words)))
-        print(padding + ' '.join(self.words))
-        self.words = []
-
-
-lp = LeftParagraph(8)
-lp.add_word('abc')
-lp.add_word('defg')
-lp.add_word('hi')
-lp.add_word('jklmnopq')
-lp.add_word('r')
-lp.add_word('stuv')
-lp.end()
-print()
-
-rp = RightParagraph(8)
-rp.add_word('abc')
-rp.add_word('defg')
-rp.add_word('hi')
-rp.add_word('jklmnopq')
-rp.add_word('r')
-rp.add_word('stuv')
-rp.end()
-print()
+phone_number = input("Введите номер телефона: ")
+formatted_phone_number = check_phone_number(phone_number)
+print(formatted_phone_number)

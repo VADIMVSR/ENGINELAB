@@ -1,120 +1,38 @@
-class Weapon:
-    def __init__(self, name, damage, weapon_range):
-        self.name = name
-        self.damage = damage
-        self.range = weapon_range
-
-    def hit(self, actor, target):
-        if not target.is_alive():
-            print("Враг уже повержен")
-        elif self.get_distance(actor, target) > self.range:
-            print(f"Враг слишком далеко для оружия {self.name}")
+ 
+def check_phone_number(phone):
+    try:
+        phone = ''.join(filter(str.isdigit, phone))  # Убираем все символы-НЕцифры
+        if len(phone) == 11 and phone.startswith('7'):  # Проверяем длину и начало номера
+            operator_code = phone[1:4]
+            if operator_code in ['910', '911', '912', '913', '914', '915', '916', '917', '918', '919',
+                                 '980', '981', '982', '983', '984', '985', '986', '987', '988', '989']:
+                return '+' + phone, "МТС"
+            elif operator_code in ['920', '921', '922', '923', '924', '925', '926', '927', '928', '929',
+                                   '930', '931', '932', '933', '934', '935', '936', '937', '938', '939']:
+                return '+' + phone, "МегаФон"
+            elif operator_code in ['902', '903', '904', '905', '906',
+                                   '960', '961', '962', '963', '964', '965', '966', '967', '968', '969']:
+                return '+' + phone, "Билайн"
+            else:
+                return '+7' + phone[1:], "не определяется оператор сотовой связи"
+        elif len(phone) == 10 and phone.startswith('8'):  # Проверяем длину и начало номера
+            operator_code = phone[0:3]
+            if operator_code in ['910', '911', '912', '913', '914', '915', '916', '917', '918', '919',
+                                 '980', '981', '982', '983', '984', '985', '986', '987', '988', '989']:
+                return '+7' + phone, "МТС"
+            elif operator_code in ['920', '921', '922', '923', '924', '925', '926', '927', '928', '929',
+                                   '930', '931', '932', '933', '934', '935', '936', '937', '938', '939']:
+                return '+7' + phone, "МегаФон"
+            elif operator_code in ['902', '903', '904', '905',
+                                   '960', '961', '962','963','964','965','966','967','968','969']:
+                return '+7' + phone, "Билайн"
+            else:
+                return '+7' + phone, "не определяется оператор сотовой связи"
         else:
-            print(f"Врагу нанесен урон оружием {self.name} в размере {self.damage}")
-            target.get_damage(self.damage)
+            raise ValueError("Неверное количество цифр")
+    except ValueError:
+        return '+7' + phone[1:], "Неверный формат"
 
-    def __str__(self):
-        return self.name
-
-    def get_distance(self, actor, target):
-        return abs(actor.pos_x - target.pos_x) + abs(actor.pos_y - target.pos_y)
-
-class BaseCharacter:
-    def __init__(self, pos_x, pos_y, hp):
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.hp = hp
-
-    def move(self, delta_x, delta_y):
-        self.pos_x += delta_x
-        self.pos_y += delta_y
-
-    def is_alive(self):
-        return self.hp > 0
-
-    def get_damage(self, amount):
-        self.hp -= amount
-        if self.hp <= 0:
-            self.hp = 0
-
-    def get_coords(self):
-        return self.pos_x, self.pos_y
-
-class BaseEnemy(BaseCharacter):
-    def __init__(self, pos_x, pos_y, weapon, hp):
-        super().__init__(pos_x, pos_y, hp)
-        self.weapon = weapon
-
-    def hit(self, target):
-        if isinstance(target, MainHero):
-            self.weapon.hit(self, target)
-        else:
-            print("Могу ударить только Главного героя")
-
-    def __str__(self):
-        return f"Враг на позиции ({self.pos_x}, {self.pos_y}) с оружием {self.weapon}"
-
-class MainHero(BaseCharacter):
-    def __init__(self, pos_x, pos_y, name, hp):
-        super().__init__(pos_x, pos_y, hp)
-        self.name = name
-        self.weapons = []
-        self.current_weapon_index = 0
-
-    def hit(self, target):
-        if not self.weapons:
-            print("Я безоружен")
-        elif isinstance(target, BaseEnemy):
-            self.weapons[self.current_weapon_index].hit(self, target)
-        else:
-            print("Могу ударить только Врага")
-
-    def add_weapon(self, weapon):
-        if isinstance(weapon, Weapon):
-            self.weapons.append(weapon)
-            print(f"Подобрал {weapon}")
-            if len(self.weapons) == 1:
-                self.current_weapon_index = 0
-        else:
-            print("Это не оружие")
-
-    def next_weapon(self):
-        if not self.weapons:
-            print("Я безоружен")
-        elif len(self.weapons) == 1:
-            print("У меня только одно оружие")
-        else:
-            self.current_weapon_index = (self.current_weapon_index + 1) % len(self.weapons)
-            print(f"Сменил оружие на {self.weapons[self.current_weapon_index]}")
-
-    def heal(self, amount):
-        self.hp = min(self.hp + amount, 200)
-        print(f"Полечился, теперь здоровья {self.hp}")
-
-# Создание оружия
-weapon1 = Weapon("Короткий меч", 5, 1)
-weapon2 = Weapon("Длинный меч", 7, 2)
-weapon3 = Weapon("Лук", 3, 10)
-weapon4 = Weapon("Лазерная орбитальная пушка", 1000, 1000)
-
-# Создание персонажей
-princess = BaseCharacter(100, 100, 100)
-archer = BaseEnemy(50, 50, weapon3, 100)
-armored_swordsman = BaseEnemy(10, 10, weapon2, 500)
-
-# Взаимодействие персонажей
-archer.hit(armored_swordsman)
-armored_swordsman.move(10, 10)
-print(armored_swordsman.get_coords())
-
-main_hero = MainHero(0, 0, "Король Артур", 200)
-main_hero.hit(armored_swordsman)
-main_hero.next_weapon()
-main_hero.add_weapon(weapon1)
-main_hero.hit(armored_swordsman)
-main_hero.add_weapon(weapon4)
-main_hero.hit(armored_swordsman)
-main_hero.next_weapon()
-main_hero.hit(princess)
-main_hero.hit(armored_swordsman)
-main_hero.hit(armored_swordsman)
+phone_number = input("Введите номер телефона: ")
+formatted_phone_number, message = check_phone_number(phone_number)
+print(formatted_phone_number, "-", message)
