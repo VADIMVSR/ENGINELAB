@@ -1,32 +1,21 @@
-import sys
+import re
 
-def parse_arguments(arguments):
-    parsed_args = []
+def is_correct_mobile_phone_ru(number):
+    # Регулярное выражение для проверки номера телефона
+    pattern = r'^(\+7|8)\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2,3}[\s-]?\d{2}$'
 
-    # Проходимся по аргументам, начиная с индекса 1, так как нулевой аргумент - название скрипта
-    for arg in arguments[1:]:
-        # Проверяем наличие символа "=" в аргументе
-        if '=' in arg:
-            key, value = arg.split('=')
-            parsed_args.append((key, value))
-        elif arg != '--sort':  # Исключаем опцию --sort из вывода ошибки
-            print(f"Invalid argument format: {arg}")
-
-    return parsed_args
-
-def print_arguments(parsed_args):
-    # Если передана опция --sort, сортируем аргументы по ключу
-    if '--sort' in sys.argv:
-        parsed_args.sort(key=lambda x: x[0])
-
-    # Выводим отформатированные аргументы
-    for key, value in parsed_args:
-        print(f"Key: {key} Value: {value}")
+    # Проверяем номер телефона с помощью регулярного выражения
+    return bool(re.match(pattern, number))
 
 def main():
-    arguments = sys.argv
-    parsed_args = parse_arguments(arguments)
-    print_arguments(parsed_args)
+    # Чтение строки из стандартного ввода
+    phone_number = input("Введите номер мобильного телефона: ")
+
+    # Проверка корректности номера телефона
+    if is_correct_mobile_phone_ru(phone_number):
+        print("YES")
+    else:
+        print("NO")
 
 if __name__ == "__main__":
     main()

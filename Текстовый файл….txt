@@ -1,0 +1,4 @@
+ pytest count_chars.py 9.py
+
+pytest reverse.py 8.py
+
