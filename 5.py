@@ -1,29 +1,51 @@
-import re
-import string
+import sys
 
-def strip_punctuation_ru(data):
-    # Получаем таблицу перевода, где все знаки пунктуации будут заменены на пробел
-    translator = str.maketrans('', '', string.punctuation)
-    # Применяем таблицу перевода к строке
-    cleaned_data = data.translate(translator)
-    # Разделяем строку на слова, используя регулярное выражение, которое учитывает последовательности пробелов
-    cleaned_data = re.sub(r'\s+', ' ', cleaned_data)
-    return cleaned_data.strip()
+def read_file(filename):
+    try:
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+            return lines
+    except FileNotFoundError:
+        return None
 
-def test_strip_punctuation_ru():
-    test_cases = [
-        ("Привет, как дела?", "Привет как дела"),
-        ("Это... тест?", "Это тест"),
-        ("Привет! Как ты?", "Привет Как ты"),
-        ("Он сказал: Привет!", "Он сказал Привет"),
-        ("Почему? Потому, что!", "Почему Потому что"),
-    ]
+def print_file_content(lines, add_num=False, add_count=False, sort_lines=False):
+    if lines is None:
+        print("ERROR")
+        return
 
-    for data, expected in test_cases:
-        result = strip_punctuation_ru(data)
-        if result == expected:
-            print("YES")
-        else:
-            print("NO")
+    if sort_lines:
+        lines.sort()
 
-test_strip_punctuation_ru()
+    if add_num:
+        for i, line in enumerate(lines):
+            print(f"{i} {line.strip()}")
+    else:
+        for line in lines:
+            print(line.strip())
+
+    if add_count:
+        print(f"rows count: {len(lines)}")
+
+def main():
+    # Проверяем, что количество аргументов не менее 2 (имя скрипта и имя файла)
+    if len(sys.argv) < 2:
+        print("ERROR")
+        return
+
+    # Извлекаем имя файла из аргументов командной строки
+    filename = sys.argv[-1]
+
+    # Проверяем существование файла
+    lines = read_file(filename)
+
+    # Обработка дополнительных аргументов
+    add_num = '--num' in sys.argv
+    add_count = '--count' in sys.argv
+    sort_lines = '--sort' in sys.argv
+
+    # Вывод содержимого файла
+    print_file_content(lines, add_num, add_count, sort_lines)
+
+if __name__ == "__main__":
+    main()
+
